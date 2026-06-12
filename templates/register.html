@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bonfire Chat - Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Bonfire Chat 🔥</h1>
+        
+        <div class="form">
+            <form action="/register" method="post">
+                <div class="input">
+                    <input type="text" name="username" placeholder="🔥 username">
+                </div>
+                <div class="input">
+                    <input type="password" name="password" placeholder="🔥 password">
+                </div>
+                <div class="input">
+                    <input type="password" name="confrmation" placeholder="🔥 confirm password">
+                </div>
+                <div class="button">
+                    <button type="submit">Join the Bonfire</button>
+                </div>
+            </form>
+            <div class="auth-footer">
+                <p>Already have an account? <a href="/login">Log in</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
