@@ -3,11 +3,42 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask_session import Session
 import sqlite3
 from cs50 import SQL
+import os
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+# Create database if it doesn't exist
+if not os.path.exists("bonfire.db"):
+    conn = sqlite3.connect("bonfire.db")
+    cursor = conn.cursor()
+    
+    # Create users table
+    cursor.execute('''
+        CREATE TABLE users (
+            user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL
+        )
+    ''')
+    
+    # Create messages table
+    cursor.execute('''
+        CREATE TABLE messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            username TEXT NOT NULL,
+            message TEXT NOT NULL,
+            date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    conn.commit()
+    conn.close()
+    print("✓ Database bonfire.db created with tables")
+
 db = SQL("sqlite:///bonfire.db")
 
 
@@ -28,12 +59,10 @@ def index():
         if session.get("user_id") is None:
             return redirect("/login")
 
-        ##messages = db.execute("SELECT * FROM messages")
         return render_template("index.html")    
 
-@app.route("/get_messages", methods=["POST", "GET"])  # Allow both methods
+@app.route("/get_messages", methods=["POST", "GET"])
 def get_messages():
-    # Try to get last_id from POST first, then from GET
     last_id = request.form.get("last_id")
     if last_id is None:
         last_id = request.args.get("last_id", 0)
@@ -46,16 +75,13 @@ def get_messages():
     print(f"Found {len(messages)} messages")
     
     return jsonify(messages)
-    
-
-
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
-        confirmation = request.form.get("confrmation")  # Fixed typo
+        confirmation = request.form.get("confrmation")
 
         if not username:
             return "username required"
@@ -66,29 +92,24 @@ def register():
         elif password != confirmation:
             return "passwords don't match"
 
-            # Check if username exists
         check = db.execute("SELECT * FROM users WHERE username = ?", (username))
         print(check)
         if len(check) != 0:
-            return "username aleardy exists"
+            return "username already exists"
 
-                # Insert new user
         hash = generate_password_hash(password)
         db.execute("INSERT INTO users (username, password_hash) VALUES (?, ?)", username, hash)
-                # Get user_id
+        
         user_id = db.execute("SELECT user_id FROM users WHERE username = ? ", (username))
-
-        session["user_id"] = user_id[0]["user_id"]  # Assuming it returns a list of dicts
-        return redirect("/")  # Or wherever you want to go
+        session["user_id"] = user_id[0]["user_id"]
+        return redirect("/")
 
     else:
         return render_template("register.html")
 
-
 @app.route("/logout", methods=["POST"])
 def logout():
     session.clear()
-
     return redirect("/register")
 
 @app.route("/login", methods=["POST", "GET"])
@@ -105,19 +126,5 @@ def login():
     elif request.method == "GET":
         return render_template("login.html")
 
-        
-
-def login_required(f):
-    """
-    Decorate routes to require login.
-
-    https://flask.palletsprojects.com/en/latest/patterns/viewdecorators/
-    """
-
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if session.get("user_id") is None:
-            return redirect("/login")
-        return f(*args, **kwargs)
-
-    return decorated_function
+if __name__ == "__main__":
+    app.run(debug=True)
