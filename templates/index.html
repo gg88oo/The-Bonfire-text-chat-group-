@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bonfire Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Bonfire Chat</h1>
+        <div class="status">Connected to the bonfire</div>
+        
+        <div id="messages">
+            <!-- Messages appear here -->
+        </div>
+        
+        <form method="POST" class="message-form">
+            <input type="text" name="message" placeholder="🔥 Share your thoughts by the fire... 🔥" autocomplete="off">
+            <button type="submit">Send</button>
+        </form>
+        
+        <form action="/logout" method="POST">
+            <button type="submit" class="logout-btn">Leave the Bonfire</button>
+        </form>
+    </div>
+    
+    <script>
+    let last_id = 0;
+    
+    function fetchMessages() {
+        fetch('/get_messages?last_id=' + last_id)
+        .then(response => response.json())
+        .then(messages => {
+            for (let i = 0; i < messages.length; i++) {
+                let message = messages[i];
+                let messageDiv = document.createElement('div');
+                messageDiv.className = 'message';
+                messageDiv.innerHTML = '<span class="username">' + message.username + ':</span> <span class="message-text">' + message.message + '</span>';
+                document.getElementById("messages").appendChild(messageDiv);
+                last_id = message.id;
+            }
+            let messagesDiv = document.getElementById("messages");
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        });
+    }
+    
+    setInterval(fetchMessages, 1000);
+    fetchMessages();
+    </script>
+</body>
+</html>
