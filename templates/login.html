@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bonfire Chat - Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Bonfire Chat 🔥</h1>
+        
+        <div class="form">
+            <form action="/register" method="post">
+                <div class="input">
+                    <input type="text" name="username" placeholder="🔥 username">
+                </div>
+                <div class="input">
+                    <input type="password" name="password" placeholder="🔥 password">
+                </div>
+                <div class="input">
+                    <input type="password" name="confrmation" placeholder="🔥 confirm password">
+                </div>
+                <div class="button">
+                    <button type="submit">Join the Bonfire</button>
+                </div>
+            </form>
+            <div class="auth-footer">
+                <p>Already have an account? <a href="/login">Log in</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>(.venv) xb@xb-ThinkPad-X270-W10DG:~/bonfire$ 
+(.venv) xb@xb-ThinkPad-X270-W10DG:~/bonfire$ cat templates/
+dashboard.html  index.html      login.html      register.html
+(.venv) xb@xb-ThinkPad-X270-W10DG:~/bonfire$ cat templates/
+dashboard.html  index.html      login.html      register.html
+(.venv) xb@xb-ThinkPad-X270-W10DG:~/bonfire$ cat templates/login.html 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bonfire Chat - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Bonfire Chat 🔥</h1>
+        
+        <div class="form">
+            <form action="/login" method="post">
+                <div class="input">
+                    <input type="text" name="username" placeholder="🔥 username" required>
+                </div>
+                <div class="input">
+                    <input type="password" name="password" placeholder="🔥 password" required>
+                </div>
+                <div class="button">
+                    <button type="submit">Log in to the Bonfire</button>
+                </div>
+            </form>
+            <div class="auth-footer">
+                <p>New here? <a href="/register">Create an account</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
